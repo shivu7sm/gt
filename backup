@@ -1,0 +1,168 @@
+//
+// # SimpleServer
+//
+// A simple chat server using Socket.IO, Express, and Async.
+//
+var express = require("express");
+/*var http = require('http');
+var path = require('path');*/
+var app = express();
+app.set("view engine", "ejs");
+var bodyParser = require("body-parser");
+//var async = require('async');
+//var express = require('express');
+var req = require('request');
+
+/*var router = express();
+var server = http.createServer(router);*/
+//var io = socketio.listen(server);
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+const util = require('util');
+const fs = require('fs');
+const Lame = require("node-lame").Lame;
+
+// Your Google Cloud Platform project ID
+const projectId = 'gtranslate-1544502802958';
+const speech = require('@google-cloud/speech');
+
+// Creates a client
+const textToSpeech = require('@google-cloud/text-to-speech');
+const { Translate } = require('@google-cloud/translate');
+
+const client = new speech.SpeechClient();
+const clientT = new textToSpeech.TextToSpeechClient();
+
+//Config Items
+const target = 'es';
+const targetLangCode = 'es-ES';
+const mp3InputFile = "output-es.mp3";
+const fileName = 'output-es.wav';
+const sourceLanguage = 'en';
+const outputFile = "out.mp3"
+
+
+//Decode Function
+function mp3ToWav() {
+  const decoder = new Lame({
+    output: fileName
+  }).setFile(mp3InputFile);
+
+  decoder
+    .decode()
+    .then(() => {
+      // Decoding finished
+      console.log("Success");
+    })
+    .catch(error => {
+      // Something went wrong
+      console.log("Something went wrong" + error);
+    });
+}
+
+app.post('/translate', function(req, res) {
+  //console.dir(req.params.srcLang);
+  console.log(JSON.stringify(req.body));
+  res.send(req.body);
+  /*var audioData = req.body.audioBytes;
+  const audioBytes = fs.readFileSync(fileName).toString("base64");
+  var b64file = fs.readFileSync("b.txt").toString();
+  console.log(b64file);
+  const audio = {
+    content: b64file,
+  };
+
+  const config = {
+
+    encoding: 'AMR',
+    sampleRateHertz: 8000,
+    languageCode: 'en',
+  };
+
+  const request = {
+    audio: audio,
+    config: config,
+  };
+
+  // Detects speech in the audio file
+  client
+    .recognize(request)
+    .then(data => {
+      const response = data[0];
+      const transcription = response.results
+        .map(result => result.alternatives[0].transcript)
+        .join('\n');
+      console.log(`Transcription: ${transcription}`);
+      const text = transcription;
+      // The target language
+
+
+      // Translates some text into Russian
+      translate
+        .translate(text, target)
+        .then(results => {
+          const translation = results[0];
+          const request = {
+            input: { text: translation },
+            // Select the language and SSML Voice Gender (optional)
+            voice: { languageCode: targetLangCode, ssmlGender: 'FEMALE' },
+            // Select the type of audio encoding
+            audioConfig: { audioEncoding: 'MP3' },
+          };
+
+          clientT.synthesizeSpeech(request, (err, response) => {
+            if (err) {
+              console.error('ERROR:', err);
+              return;
+            }
+
+            // Write the binary audio content to a local file
+            fs.writeFile(outputFile, response.audioContent, 'binary', err => {
+              if (err) {
+                console.error('ERROR:', err);
+                return;
+
+              }
+              console.log('Audio content written to file: ' + outputFile);
+            });
+          });
+          //console.log(`Text: ${text}`);
+          console.log(`Translation: ${translation}`);
+           res.send(translation);
+        })
+        .catch(err => {
+          console.error('ERROR:', err);
+        });
+
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+    });
+  // Instantiates a client
+  const translate = new Translate({
+    projectId: projectId,
+  });*/
+  //res.send("Audio");
+});
+
+
+
+
+
+
+
+
+// The text to translate
+
+
+app.listen(process.env.PORT, process.env.IP, function() {
+    console.log("Server Started: Dashboard started");
+
+});
+
+/*server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function() {
+  var addr = server.address();
+  console.log("Translation Running", addr.address + ":" + addr.port);
+});*/
