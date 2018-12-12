@@ -47,9 +47,9 @@ app.post('/translate/:sLang/:tLang', function(req, res) {
       const transcription = response.results
         .map(result => result.alternatives[0].transcript)
         .join('\n');
-      console.log(`Transcription: ${transcription}`);
+     // console.log(`Transcription: ${transcription}`);
      // res.send(transcription);
-      const text = "Hello";
+      const text = transcription;
       // Translates some text to other language
       translate
         .translate(text, targetLang)
@@ -68,10 +68,17 @@ app.post('/translate/:sLang/:tLang', function(req, res) {
               console.error('ERROR:', err);
               return;
             }
-            res.send(response.audioContent.toString("base64"));
+            
+            var output = {
+               "originalText":text,
+              "translatedText":translation,
+              "audioData":response.audioContent.toString("base64")
+             
+            }
+            res.send(output);
 
           });
-          console.log(`Translation: ${translation}`);
+          //console.log(`Translation: ${translation}`);
 
         })
         .catch(err => {
